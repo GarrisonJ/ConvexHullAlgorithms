@@ -39,7 +39,6 @@ This is my tentative time plan for the project.
         - 13 March
                 - Complete written report.
   
-Sources:  
 [1]: http://www.ruby-doc.org/stdlib-1.9.3/libdoc/benchmark/rdoc/Benchmark.html  
 [2]: http://rubyvis.rubyforge.org/  
 [3]: http://en.wikipedia.org/wiki/Graham_scan  
