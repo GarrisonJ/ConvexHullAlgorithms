@@ -1,4 +1,5 @@
-
+# This is not my algorithm, it was taken from this wiki page: 
+# http://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Monotone_chain
 class AndrewMonotoneChain
   def self.cross(o, a, b)
     (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
