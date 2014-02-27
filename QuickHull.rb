@@ -63,9 +63,6 @@ class QuickHull
     end
     return minx(point)
   end
-
-  def self.distance(line, point) 
-  end
   
   def self.right_of_line(points, line)
     g = []
