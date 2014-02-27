@@ -49,16 +49,19 @@ class QuickHull
   end
 
   def self.max_from_line(points, line)
-    point = nil
+    point = []
     max = 0
     points.each do |p|
       t = ((line.p1[0] - p[0]) * (line.p2[1] - line.p1[1]) - (line.p1[0] - line.p2[0]) * (p[1] - line.p1[1])).abs
       if max < t
         max = t
-        point = p
+        point = [p]
+      elsif max == t
+        point << p
       end
+      
     end
-    return point
+    return minx(point)
   end
 
   def self.distance(line, point) 
@@ -67,7 +70,7 @@ class QuickHull
   def self.right_of_line(points, line)
     g = []
     points.each do |p|
-      if side(line, p) == 1 then g << p end
+      if (side(line, p) == 1) then g << p end
     end
     return g
   end
@@ -93,10 +96,18 @@ class QuickHull
   end
 end
 
-a = Array.new(100) { Array.new(2) { rand(10) } }
-h = QuickHull.convex_hull(a)
-b = AndrewMonotoneChain.convex_hull(a)
+(1000).times do 
+  a = Array.new(100) { Array.new(2) { rand(10) } }
+  h = QuickHull.convex_hull(a)
+  b = AndrewMonotoneChain.convex_hull(a)
+  print '.'
+  if !(h.sort==b.sort)
+    puts "FALSE"
+    GraphHull.graph(a,h,'QuickHull')
+    GraphHull.graph(a,b,'Andrew')
+    break
+  end
+end
 
-GraphHull.graph(a,h,'QuickHull')
-GraphHull.graph(a,b,'Andrew')
-p (h.sort==b.sort)
+
+
