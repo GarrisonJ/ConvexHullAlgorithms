@@ -1,71 +1,67 @@
 require './Line.rb'
+require './Graph.rb'
+require './AndrewMonotoneChain.rb'
 class QuickHull
   def self.convex_hull(points)
+    @points = points
     if points.empty? then return [] end
-    x = maxx(points)    
-    p x
-    y = maxy(points)
-    p y
-    convex_hull_rec(points, x, y)    
+    min = minx(points)
+    max = maxx(points)
+    r = right_of_line(points, Line.new(min, max))
+    l = left_of_line(points, Line.new(min, max)) 
+    return convex_hull_rec(r, min, max) + [min, max] + convex_hull_rec(l, max, min)
   end
 
-  private
   def self.convex_hull_rec(points, l, r)
-    if points.empty? then return [] end 
-    if points == [l,r] or points == [r,l] then return [l,r] end
-    x = maxx(points)
-    y = maxy(points)
-    z = max_from_line(points, Line.new(x,y))
-    a = right_of_line(points, Line.new(x,z))
-    b = left_of_line(points, Line.new(z,y))
-    return (convex_hull_rec(a,x,z) + [z] + convex_hull_rec(b,z,y))
+    if points.empty? then return [] end
+    z = max_from_line(points, Line.new(l, r))  
+    a = right_of_line(points, Line.new(l, z))
+    b = right_of_line(points, Line.new(z, r))
+    return convex_hull_rec(a, l, z) + [z] + convex_hull_rec(b, z, r)
   end 
 
   def self.maxx(points)
-    m = points.first
+    maxP = points.first
     points.each do |p|
-      if p[0] > m[0]
-        m = p
-      elsif p[0] == m[0]
-        if p[1] > p[1]
-          m = p
+      if p[0] > maxP[0]
+        maxP = p
+      elsif p[0] == maxP[0]
+        if p[1] > maxP[1]
+          maxP = p
         end
       end
     end
-    return m
+    return maxP
   end
 
-  def self.maxy(points)
-    m = points.first
-    points.each do |p| 
-      if p[1] > m[1]
-        m = p
-      elsif p[1] == m[1]
-        if p[0] > p[0]
-          m = p
+  def self.minx(points)
+    minP = points.first
+    points.each do |p|
+      if p[0] < minP[0]
+        minP = p
+      elsif p[0] == minP[0]
+        if p[1] < minP[1]
+          minP = p
         end
       end
     end
-    return m
+    return minP
   end
 
   def self.max_from_line(points, line)
-    max  = points.first
-    dmax = distance(line, points.first)
-    points.each do |p|  
-      d = distance(line,p)
-      if d > dmax
-         max = p      
-         dmax = d
+    point = nil
+    max = 0
+    points.each do |p|
+      t = ((line.p1[0] - p[0]) * (line.p2[1] - line.p1[1]) - (line.p1[0] - line.p2[0]) * (p[1] - line.p1[1])).abs
+      if max < t
+        max = t
+        point = p
       end
     end
-    return max
+    return point
   end
 
   def self.distance(line, point) 
-    a = point[0] * (line.p2[1] - line.p1[1]) + (line.p1[0] - line.p2[0]) * point[1] - (line.p1[0] * line.p2[1] - line.p2[0] * line.p1[1])
-    b = (line.p2[1] - line.p1[1])**2 + (line.p1[0] - line.p2[0])**2
-    return a.abs/Math.sqrt(b)
   end
   
   def self.right_of_line(points, line)
@@ -97,8 +93,10 @@ class QuickHull
   end
 end
 
+a = Array.new(100) { Array.new(2) { rand(10) } }
+h = QuickHull.convex_hull(a)
+b = AndrewMonotoneChain.convex_hull(a)
 
-a = [[2,1],[3,2],[3,3],[4,1]]
-p a
-p QuickHull.convex_hull(a).sort
-
+GraphHull.graph(a,h,'QuickHull')
+GraphHull.graph(a,b,'Andrew')
+p (h.sort==b.sort)
